@@ -694,7 +694,7 @@ class TestHappyPathCoverTimer:
         async def callback() -> None:
             print("MOCKED CALLBACK")
 
-        timer: CoverTimer = CoverTimer(1, callback)
+        timer: CoverTimer = CoverTimer(0.5, callback)
         timer.start()
 
         await asyncio.sleep(1)

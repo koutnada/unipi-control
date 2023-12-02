@@ -236,19 +236,19 @@ async def init_unipi(config_loader: ConfigLoader, modbus_client: ModbusClient) -
 
 
 @pytest_asyncio.fixture(name="covers")
-async def create_cover_map(config_loader: ConfigLoader, neuron: Unipi) -> AsyncGenerator[CoverMap, None]:
+async def create_cover_map(config_loader: ConfigLoader, unipi: Unipi) -> AsyncGenerator[CoverMap, None]:
     """Initialize cover map for tests.
 
     Parameters
     ----------
     config_loader: ConfigLoader
         Config loader class with helper methods.
-    neuron: Unipi
-        Initialized neuron device.
+    unipi: Unipi
+        Initialized Unipi device.
     """
     config: Config = config_loader.get_config()
     config.logging.init()
-    covers: CoverMap = CoverMap(config=config, features=neuron.features)
+    covers: CoverMap = CoverMap(config=config, features=unipi.features)
 
     yield covers
 
