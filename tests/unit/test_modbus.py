@@ -18,18 +18,18 @@ from tests.conftest_data import CONFIG_CONTENT
 from tests.conftest_data import EXTENSION_HARDWARE_DATA_CONTENT
 from tests.conftest_data import HARDWARE_DATA_CONTENT
 from unipi_control.config import Config
-from unipi_control.config import HardwareType
-from unipi_control.helpers.typing import ModbusClient
-from unipi_control.devices.unipi import Unipi
+from unipi_control.hardware.map import HardwareType
+from unipi_control.modbus.helpers import ModbusClient
+from unipi_control.hardware.unipi import Unipi
 
 
 class TestUnhappyPathModbus:
     @pytest.mark.parametrize(
         "config_loader", [(CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT)], indirect=True
     )
-    def test_modbus_error(self, neuron: Unipi, caplog: LogCaptureFixture) -> None:
+    def test_modbus_error(self, unipi: Unipi, caplog: LogCaptureFixture) -> None:
         """Test modbus error logging if read register failed."""
-        neuron.modbus_cache_data.get_register(index=3, address=0, unit=1)
+        unipi.modbus_helper.get_register(index=3, address=0, unit=1)
         logs: List[str] = [record.getMessage() for record in caplog.records]
 
         assert "[MODBUS] Error on address 0 (unit: 1)" in logs
@@ -73,14 +73,14 @@ class TestUnhappyPathModbus:
         mock_modbus_tcp_client.read_input_registers.side_effect = exception("MOCKED ERROR")
 
         mock_hardware_info: PropertyMock = mocker.patch(
-            "unipi_control.config.HardwareInfo", new_callable=PropertyMock()
+            "unipi_control.hardware.map.HardwareInfo", new_callable=PropertyMock()
         )
         mock_hardware_info.return_value = MockHardwareInfo()
 
         modbus_client = ModbusClient(tcp=mock_modbus_tcp_client, serial=mock_modbus_tcp_client)
-        neuron: Unipi = Unipi(config=config, modbus_client=modbus_client)
+        unipi: Unipi = Unipi(config=config, modbus_client=modbus_client)
 
-        await neuron.modbus_cache_data.scan("tcp", hardware_types=[HardwareType.PLC])
+        await unipi.modbus_helper.scan_tcp()
 
         logs: List[str] = [record.getMessage() for record in caplog.records]
 
