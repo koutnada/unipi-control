@@ -214,5 +214,7 @@ async def check_modbus_call(
             response = None
     except ModbusException as error:
         UNIPI_LOGGER.error("%s %s", LogPrefix.MODBUS, error)
+    except asyncio.exceptions.TimeoutError:
+        UNIPI_LOGGER.error("%s Timeout on: %s", LogPrefix.MODBUS, data)
 
     return response
