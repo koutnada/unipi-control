@@ -12,18 +12,19 @@ from tests.conftest import MockModbusClient
 from tests.conftest_data import CONFIG_CONTENT
 from tests.conftest_data import EXTENSION_HARDWARE_DATA_CONTENT
 from tests.conftest_data import HARDWARE_DATA_CONTENT
+from unipi_control.features.constants import FeatureType
 from unipi_control.features.eastron import Eastron
 from unipi_control.features.unipi import DigitalInput
 from unipi_control.features.unipi import DigitalOutput
 from unipi_control.features.unipi import Led
 from unipi_control.features.unipi import Relay
-from unipi_control.helpers.exception import ConfigError
-from unipi_control.devices.unipi import Unipi
+from unipi_control.helpers.exceptions import ConfigError
+from unipi_control.hardware.unipi import Unipi
 
 
 class FeatureOptions(NamedTuple):
     feature_id: str
-    feature_type: str
+    feature_type: FeatureType
 
 
 class FeatureExpected(NamedTuple):
@@ -40,39 +41,39 @@ class TestHappyPathFeatures:
         [
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                FeatureOptions(feature_id="di_2_15", feature_type="DI"),
+                FeatureOptions(feature_id="di_2_15", feature_type=FeatureType.DI),
                 FeatureExpected(topic_feature_name="input", value=1, str_output="Digital Input 2.15", coil=None),
             ),
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                FeatureOptions(feature_id="do_1_01", feature_type="DO"),
+                FeatureOptions(feature_id="do_1_01", feature_type=FeatureType.DO),
                 FeatureExpected(topic_feature_name="relay", value=0, str_output="Digital Output 1.01", coil=0),
             ),
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                FeatureOptions(feature_id="ro_2_13", feature_type="RO"),
+                FeatureOptions(feature_id="ro_2_13", feature_type=FeatureType.RO),
                 FeatureExpected(topic_feature_name="relay", value=0, str_output="Relay 2.13", coil=112),
             ),
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                FeatureOptions(feature_id="ro_2_14", feature_type="RO"),
+                FeatureOptions(feature_id="ro_2_14", feature_type=FeatureType.RO),
                 FeatureExpected(topic_feature_name="relay", value=1, str_output="Relay 2.14", coil=113),
             ),
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                FeatureOptions(feature_id="led_1_01", feature_type="LED"),
+                FeatureOptions(feature_id="led_1_01", feature_type=FeatureType.LED),
                 FeatureExpected(topic_feature_name="led", value=0, str_output="LED 1.01", coil=8),
             ),
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                FeatureOptions(feature_id="active_power_1", feature_type="METER"),
+                FeatureOptions(feature_id="active_power_1", feature_type=FeatureType.METER),
                 FeatureExpected(topic_feature_name="meter", value=37.7, str_output="Active Power"),
             ),
         ],
         indirect=["config_loader"],
     )
     async def test_output_features(
-        self, modbus_client: MockModbusClient, neuron: Unipi, options: FeatureOptions, expected: FeatureExpected
+        self, modbus_client: MockModbusClient, unipi: Unipi, options: FeatureOptions, expected: FeatureExpected
     ) -> None:
         """Test values from the output features."""
         mock_response = MagicMock(spec=ModbusResponse)
@@ -80,7 +81,7 @@ class TestHappyPathFeatures:
 
         modbus_client.tcp.write_coil.return_value = mock_response
 
-        feature: Union[DigitalInput, DigitalOutput, Led, Relay, Eastron] = neuron.features.by_feature_id(
+        feature: Union[DigitalInput, DigitalOutput, Led, Relay, Eastron] = unipi.features.by_feature_id(
             options.feature_id, feature_types=[options.feature_type]
         )
 
@@ -116,10 +117,10 @@ class TestHappyPathFeatures:
         ],
         indirect=["config_loader", "modbus_client"],
     )
-    async def test_eastron_sw_version(self, neuron: Unipi, expected: str) -> None:
+    async def test_eastron_sw_version(self, unipi: Unipi, expected: str) -> None:
         """Test eastron software version."""
-        feature: Union[DigitalInput, DigitalOutput, Led, Relay, Eastron] = neuron.features.by_feature_id(
-            "active_power_1", feature_types=["METER"]
+        feature: Union[DigitalInput, DigitalOutput, Led, Relay, Eastron] = unipi.features.by_feature_id(
+            "active_power_1", feature_types=[FeatureType.METER]
         )
 
         assert feature.sw_version == expected
@@ -137,9 +138,9 @@ class TestUnhappyPathFeatures:
         ],
         indirect=["config_loader"],
     )
-    def test_invalid_feature_by_feature_id(self, neuron: Unipi, feature_id: str, expected: str) -> None:
+    def test_invalid_feature_by_feature_id(self, unipi: Unipi, feature_id: str, expected: str) -> None:
         """Test that invalid feature id raises ConfigError when reading feature by feature id."""
         with pytest.raises(ConfigError) as error:
-            neuron.features.by_feature_id(feature_id, feature_types=["DO", "RO"])
+            unipi.features.by_feature_id(feature_id, feature_types=[FeatureType.DO, FeatureType.RO])
 
         assert str(error.value) == expected
