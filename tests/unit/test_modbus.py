@@ -26,7 +26,12 @@ class TestUnhappyPathModbus:
     @pytest.mark.parametrize(
         "config_loader", [(CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT)], indirect=True
     )
-    def test_modbus_error(self, unipi: Unipi, caplog: LogCaptureFixture) -> None:
+    def test_modbus_error(
+        self,
+        config_loader: ConfigLoader,
+        unipi: Unipi,
+        caplog: LogCaptureFixture,
+    ) -> None:
         """Test modbus error logging if read register failed."""
         unipi.modbus_helper.get_register(index=3, address=0, unit=1)
         logs: List[str] = [record.getMessage() for record in caplog.records]
