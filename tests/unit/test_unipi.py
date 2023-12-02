@@ -1,4 +1,4 @@
-"""Unit tests for neuron device."""
+"""Unit tests for Unipi device."""
 
 from typing import List, TYPE_CHECKING
 from unittest.mock import AsyncMock
@@ -15,14 +15,14 @@ from tests.conftest import MockHardwareInfo
 from tests.conftest_data import CONFIG_CONTENT
 from tests.conftest_data import EXTENSION_HARDWARE_DATA_CONTENT
 from tests.conftest_data import HARDWARE_DATA_CONTENT
-from unipi_control.helpers.typing import ModbusClient
-from unipi_control.devices.unipi import Unipi
+from unipi_control.modbus.helpers import ModbusClient
+from unipi_control.hardware.unipi import Unipi
 
 if TYPE_CHECKING:
     from unipi_control.config import Config
 
 
-class TestUnhappyPathNeuron:
+class TestUnhappyPathUnipi:
     @pytest.mark.asyncio()
     @pytest.mark.parametrize(
         "config_loader", [(CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT)], indirect=True
@@ -33,7 +33,7 @@ class TestUnhappyPathNeuron:
         config_loader: ConfigLoader,
         caplog: LogCaptureFixture,
     ) -> None:
-        """Test read neuron boards failed with no boards found."""
+        """Test read Unipi boards failed with no boards found."""
         config: Config = config_loader.get_config()
 
         mock_response: MagicMock = MagicMock(spec=ModbusResponse)
@@ -43,14 +43,14 @@ class TestUnhappyPathNeuron:
         mock_modbus_tcp_client.read_input_registers.return_value = mock_response
 
         mock_hardware_info: PropertyMock = mocker.patch(
-            "unipi_control.config.HardwareInfo", new_callable=PropertyMock()
+            "unipi_control.hardware.map.HardwareInfo", new_callable=PropertyMock()
         )
         mock_hardware_info.return_value = MockHardwareInfo()
 
         modbus_client = ModbusClient(tcp=mock_modbus_tcp_client, serial=mock_modbus_tcp_client)
-        neuron: Unipi = Unipi(config=config, modbus_client=modbus_client)
+        unipi: Unipi = Unipi(config=config, modbus_client=modbus_client)
 
-        await neuron.read_boards()
+        await unipi.read_boards()
 
         logs: List[str] = [record.getMessage() for record in caplog.records]
 
