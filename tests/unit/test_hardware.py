@@ -24,7 +24,7 @@ from unipi_control.modbus.helpers import ModbusClient
 from unipi_control.hardware.unipi import Unipi
 
 
-class TestHappyPathHardwareUnipi:
+class TestHappyPathHardware:
     @pytest.mark.asyncio()
     @pytest.mark.parametrize(
         "config_loader",
@@ -58,7 +58,7 @@ class TestHappyPathHardwareUnipi:
         assert "[CONFIG] 94 features initialized." in logs
 
 
-class TestUnhappyHardwareUnipi:
+class TestUnhappyHardware:
     @pytest.mark.parametrize(
         ("config_loader", "expected"),
         [
