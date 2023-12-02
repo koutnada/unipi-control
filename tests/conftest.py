@@ -202,20 +202,19 @@ def mock_modbus_client(request: SubRequest, mocker: MockerFixture) -> MockModbus
     mock_response_sw_version: MagicMock = MagicMock(spec=ModbusResponse, registers=[32, 516])
     mock_response_sw_version.isError.return_value = modbus_client_config.get("eastron_sw_version_failed", False)
 
-    mock_modbus_serial_client.read_holding_registers.side_effect = [
-        # Eastron SDM120M Software Version
-        mock_response_sw_version,
-    ] * (EastronSDM120M.RETRY_LIMIT if modbus_client_config.get("eastron_sw_version_failed") else 1)
+    mock_modbus_serial_client.read_holding_registers.return_value = mock_response_sw_version
 
-    mock_hardware_info: PropertyMock = mocker.patch("unipi_control.config.HardwareInfo", new_callable=PropertyMock())
+    mock_hardware_info: PropertyMock = mocker.patch(
+        "unipi_control.hardware.map.HardwareInfo", new_callable=PropertyMock()
+    )
     mock_hardware_info.return_value = MockHardwareInfo()
 
     return MockModbusClient(tcp=mock_modbus_tcp_client, serial=mock_modbus_serial_client)
 
 
-@pytest_asyncio.fixture(name="neuron")
-async def init_neuron(config_loader: ConfigLoader, modbus_client: ModbusClient) -> AsyncGenerator[Unipi, None]:
-    """Initialize neuron device for tests.
+@pytest_asyncio.fixture(name="unipi")
+async def init_unipi(config_loader: ConfigLoader, modbus_client: ModbusClient) -> AsyncGenerator[Unipi, None]:
+    """Initialize Unipi device for tests.
 
     Parameters
     ----------
@@ -227,10 +226,13 @@ async def init_neuron(config_loader: ConfigLoader, modbus_client: ModbusClient) 
     config: Config = config_loader.get_config()
     config.logging.init()
 
-    neuron: Unipi = Unipi(config=config, modbus_client=modbus_client)
-    await neuron.init()
+    unipi: Unipi = Unipi(config=config, modbus_client=modbus_client)
+    await unipi.init()
 
-    yield neuron
+    await unipi.modbus_helper.scan_tcp()
+    await unipi.modbus_helper.scan_serial()
+
+    yield unipi
 
 
 @pytest_asyncio.fixture(name="covers")
