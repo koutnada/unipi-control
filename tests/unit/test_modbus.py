@@ -18,7 +18,6 @@ from tests.conftest_data import CONFIG_CONTENT
 from tests.conftest_data import EXTENSION_HARDWARE_DATA_CONTENT
 from tests.conftest_data import HARDWARE_DATA_CONTENT
 from unipi_control.config import Config
-from unipi_control.hardware.map import HardwareType
 from unipi_control.modbus.helpers import ModbusClient
 from unipi_control.hardware.unipi import Unipi
 
