@@ -9,10 +9,9 @@ CONFIG_CONTENT: Final[
 mqtt:
   host: localhost
   port: 1883
-  connection:
-    keepalive: 15
-    retry_limit: 30
-    reconnect_interval: 10
+  keepalive: 15
+  retry_limit: 30
+  reconnect_interval: 10
 homeassistant:
   enabled: True
   discovery_prefix: homeassistant

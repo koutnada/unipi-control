@@ -14,17 +14,18 @@ CONFIG_CONTENT: Final[
 mqtt:
   host: localhost
   port: 1883
-  connection:
-    keepalive: 15
-    retry_limit: 30
-    reconnect_interval: 10
+  keepalive: 15
+  retry_limit: 2
+  reconnect_interval: 2
 modbus_tcp:
   host: MOCKED_MODBUS_HOST
   port: 123
+  scan_interval: 0.5
 modbus_serial:
   port: /dev/MOCKED
   baud_rate: 2400
   parity: N
+  scan_interval: 0.5
   units:
     - unit: 1
       device_name: MOCKED Eastron SDM120M

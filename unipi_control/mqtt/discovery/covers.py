@@ -24,8 +24,8 @@ if TYPE_CHECKING:
 class HassCoversDiscovery:
     """Provide the covers as Home Assistant MQTT discovery."""
 
-    def __init__(self, covers: CoverMap, unipi: Unipi, mqtt_client: Client) -> None:
-        self.mqtt_client: Client = mqtt_client
+    def __init__(self, covers: CoverMap, unipi: Unipi, client: Client) -> None:
+        self.mqtt_client: Client = client
         self.covers: CoverMap = covers
 
         self.config: Config = unipi.config
@@ -84,6 +84,7 @@ class HassCoversDiscovery:
         """Publish MQTT Home Assistant discovery topics for covers."""
         for cover in self.covers.by_device_classes(DEVICE_CLASSES):
             topic, message = self.get_discovery(cover)
+
             json_data: str = json.dumps(message)
             await self.mqtt_client.publish(topic=topic, payload=json_data, qos=2, retain=True)
             UNIPI_LOGGER.debug(LOG_MQTT_PUBLISH, topic, json_data)

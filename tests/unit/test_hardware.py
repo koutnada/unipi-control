@@ -47,11 +47,11 @@ class TestHappyPathHardware:
         assert "[CONFIG] 2 hardware definition(s) found." in logs
         assert "[MODBUS] Reading SPI boards" in logs
         assert "[MODBUS] Found board 1 on SPI" in logs
-        assert "[MODBUS] Firmware version on board 1 is 0.0" in logs
+        assert "[MODBUS] Firmware version on board 1 is 6.18" in logs
         assert "[MODBUS] Found board 2 on SPI" in logs
-        assert "[MODBUS] Firmware version on board 2 is 0.0" in logs
+        assert "[MODBUS] Firmware version on board 2 is 6.18" in logs
         assert "[MODBUS] Found board 3 on SPI" in logs
-        assert "[MODBUS] Firmware version on board 3 is 0.0" in logs
+        assert "[MODBUS] Firmware version on board 3 is 6.18" in logs
         assert "[MODBUS] Reading extensions" in logs
         assert "[MODBUS] [RTU] Found device with unit 1 (manufacturer: Eastron, model: SDM120M)" in logs
         assert "[MODBUS] Firmware version on Eastron SDM120 is 202.04" in logs

@@ -48,10 +48,9 @@ CONFIG_INVALID_MQTT_PORT_TYPE: Final[
 mqtt:
   host: localhost
   port: INVALID
-  connection:
-    keepalive: 15
-    retry_limit: 30
-    reconnect_interval: 10"""
+  keepalive: 15
+  retry_limit: 30
+  reconnect_interval: 10"""
 
 CONFIG_INVALID_HOMEASSISTANT_DISCOVERY_PREFIX: Final[
     str

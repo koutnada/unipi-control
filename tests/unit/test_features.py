@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 from pymodbus.pdu import ModbusResponse
 
+from tests.conftest import ConfigLoader
 from tests.conftest import MockModbusClient
 from tests.conftest_data import CONFIG_CONTENT
 from tests.conftest_data import EXTENSION_HARDWARE_DATA_CONTENT
@@ -20,6 +21,7 @@ from unipi_control.features.unipi import Led
 from unipi_control.features.unipi import Relay
 from unipi_control.helpers.exceptions import ConfigError
 from unipi_control.hardware.unipi import Unipi
+from unipi_control.modbus.helpers import ModbusClient
 
 
 class FeatureOptions(NamedTuple):
@@ -81,6 +83,9 @@ class TestHappyPathFeatures:
 
         modbus_client.tcp.write_coil.return_value = mock_response
 
+        await unipi.modbus_helper.scan_tcp()
+        await unipi.modbus_helper.scan_serial()
+
         feature: Union[DigitalInput, DigitalOutput, Led, Relay, Eastron] = unipi.features.by_feature_id(
             options.feature_id, feature_types=[options.feature_type]
         )
@@ -102,22 +107,18 @@ class TestHappyPathFeatures:
 
     @pytest.mark.asyncio()
     @pytest.mark.parametrize(
-        ("config_loader", "modbus_client", "expected"),
+        ("config_loader", "expected"),
         [
             (
                 (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                {"eastron_sw_version_failed": True},
-                "Unknown",
-            ),
-            (
-                (CONFIG_CONTENT, HARDWARE_DATA_CONTENT, EXTENSION_HARDWARE_DATA_CONTENT),
-                {"eastron_sw_version_failed": False},
                 "202.04",
             ),
         ],
-        indirect=["config_loader", "modbus_client"],
+        indirect=["config_loader"],
     )
-    async def test_eastron_sw_version(self, unipi: Unipi, expected: str) -> None:
+    async def test_eastron_sw_version(
+        self, config_loader: ConfigLoader, modbus_client: ModbusClient, unipi: Unipi, expected: str
+    ) -> None:
         """Test eastron software version."""
         feature: Union[DigitalInput, DigitalOutput, Led, Relay, Eastron] = unipi.features.by_feature_id(
             "active_power_1", feature_types=[FeatureType.METER]

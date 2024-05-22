@@ -22,10 +22,12 @@ class HassSensorsDiscovery(HassDiscoveryMixin):
     """Provide the sensors (e.g. meter) as Home Assistant MQTT discovery."""
 
     def _get_via_device(self, feature: Eastron) -> Optional[str]:
-        if (device_name := self.config.device_info.name) != self._get_device_name(feature):
-            return device_name
+        _device_name: Optional[str] = None
 
-        return None
+        if (device_name := self.config.device_info.name) != self._get_device_name(feature):
+            _device_name = device_name
+
+        return _device_name
 
     def _get_device_name(self, feature: Eastron) -> str:
         suggested_area: Optional[str] = feature.hardware.definition.suggested_area

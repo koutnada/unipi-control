@@ -29,6 +29,7 @@ from unipi_control.helpers.log import LOG_MQTT_SUBSCRIBE
 from unipi_control.helpers.text import slugify
 from unipi_control.integrations.covers import CoverMap
 from unipi_control.mqtt.discovery.binary_sensors import HassBinarySensorsDiscovery
+from unipi_control.mqtt.discovery.covers import HassCoversDiscovery
 from unipi_control.mqtt.discovery.sensors import HassSensorsDiscovery
 from unipi_control.mqtt.discovery.switches import HassSwitchesDiscovery
 from unipi_control.hardware.unipi import Unipi
@@ -39,6 +40,9 @@ from unipi_control.mqtt.integrations.covers import CoversMqttHelper
 
 
 class MqttHelper:
+    MQTT_RUNNING: ClassVar[bool] = True
+    RETRY_RECONNECT: ClassVar[int] = 0
+
     PUBLISH_RUNNING: ClassVar[bool] = True
     SCAN_INTERVAL: ClassVar[float] = 0.02
 
@@ -67,32 +71,37 @@ class MqttHelper:
         self.config: Config = unipi.config
         self.unipi: Unipi = unipi
 
+        self.covers: CoverMap = CoverMap(self.config, self.unipi.features)
+        self.covers.init()
+
     async def run(self) -> None:
-        """Connect/reconnect to MQTT and start publish/subscribe."""
-        covers = CoverMap(self.config, self.unipi.features)
-        covers.init()
+        """Connect/reconnect to MQTT broker."""
+        mqtt_client_id: str = f"{slugify(self.config.device_info.name)}-{uuid.uuid4()}"
+        UNIPI_LOGGER.info("%s Client ID: %s", LogPrefix.MQTT, mqtt_client_id)
 
         mqtt_client = MqttClient(
             self.config.mqtt.host,
             port=self.config.mqtt.port,
             username=self.config.mqtt.username,
             password=self.config.mqtt.password,
+            client_id=mqtt_client_id,
+            keepalive=self.config.mqtt.keepalive,
         )
-
-        mqtt_client_id: str = f"{slugify(self.config.device_info.name)}-{uuid.uuid4()}"
-        UNIPI_LOGGER.info("%s Client ID: %s", LogPrefix.MQTT, mqtt_client_id)
 
         reconnect_interval: int = self.config.mqtt.reconnect_interval
         retry_limit: Optional[int] = self.config.mqtt.retry_limit
         retry_reconnect: int = 0
         discovery_initialized: bool = False
 
-        while True:
-            start_time = time.time()
+        while self.MQTT_RUNNING:
             tasks: Set[Task] = set()
 
             try:
                 async with mqtt_client:
+                    UNIPI_LOGGER.info(
+                        "%s Connected to %s:%s", LogPrefix.MQTT, self.config.mqtt.host, self.config.mqtt.port
+                    )
+
                     if self.config.homeassistant.enabled and not discovery_initialized:
                         UNIPI_LOGGER.info("%s Initialize Home Assistant discovery", LogPrefix.MQTT)
                         await self.discovery(client=mqtt_client)
@@ -122,27 +131,28 @@ class MqttHelper:
 
                     CoversMqttHelper(
                         client=mqtt_client,
-                        covers=covers,
+                        covers=self.covers,
                     ).init(tasks=tasks)
 
                     await asyncio.gather(*tasks)
             except MqttError as error:
+                retry_reconnect += 1
+
                 UNIPI_LOGGER.error(
                     "%s Error '%s'. Connecting attempt #%s. Reconnecting in %s seconds.",
                     LogPrefix.MQTT,
                     error,
-                    retry_reconnect + 1,
+                    retry_reconnect,
                     reconnect_interval,
                 )
 
-                if retry_limit and retry_reconnect > retry_limit:
+                if retry_limit and retry_reconnect >= retry_limit:
                     msg: str = "Shutdown, due to too many MQTT connection attempts."
                     raise UnexpectedError(msg) from error
 
-                retry_reconnect += 1
                 await asyncio.sleep(reconnect_interval)
-
-            UNIPI_LOGGER.info("%s", time.time() - start_time)
+            else:
+                retry_reconnect = 0
 
     async def subscribe(self, client: MqttClient) -> None:
         """Subscribe feature topics to MQTT."""
@@ -212,3 +222,5 @@ class MqttHelper:
                 await HassSensorsDiscovery(unipi=self.unipi, client=client).publish(feature)
             elif isinstance(feature, (DigitalOutput, Relay)):
                 await HassSwitchesDiscovery(unipi=self.unipi, client=client).publish(feature)
+
+        await HassCoversDiscovery(covers=self.covers, unipi=self.unipi, client=client).publish()

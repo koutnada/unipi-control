@@ -14,7 +14,7 @@ from tests.conftest import MockHardwareInfo
 from tests.conftest_data import CONFIG_CONTENT
 from tests.conftest_data import EXTENSION_HARDWARE_DATA_CONTENT
 from tests.conftest_data import HARDWARE_DATA_CONTENT
-from unipi_control.helpers.typing import ModbusClient
+from unipi_control.modbus.helpers import ModbusClient
 from unipi_control.unipi_control import main
 
 

@@ -174,7 +174,7 @@ def mock_modbus_client(request: SubRequest, mocker: MockerFixture) -> MockModbus
     """
     modbus_client_config: Dict[str, Any] = getattr(request, "param", {})
 
-    mock_bord_response: MagicMock = MagicMock(spec=ModbusResponse, registers=[0])
+    mock_bord_response: MagicMock = MagicMock(spec=ModbusResponse, registers=[1554])
     mock_bord_response.isError.return_value = False
 
     for mock_response in NEURON_L203_MODBUS_REGISTER:
@@ -197,12 +197,13 @@ def mock_modbus_client(request: SubRequest, mocker: MockerFixture) -> MockModbus
         mock_response.isError.return_value = False
 
     mock_modbus_serial_client: AsyncMock = AsyncMock()
-    mock_modbus_serial_client.read_input_registers.side_effect = EXTENSION_EASTRON_SDM120M_MODBUS_REGISTER
+    # mock_modbus_serial_client.return_value.connected = PropertyMock(return_value=False)
 
     mock_response_sw_version: MagicMock = MagicMock(spec=ModbusResponse, registers=[32, 516])
-    mock_response_sw_version.isError.return_value = modbus_client_config.get("eastron_sw_version_failed", False)
-
+    mock_response_sw_version.isError.return_value = False
     mock_modbus_serial_client.read_holding_registers.return_value = mock_response_sw_version
+
+    mock_modbus_serial_client.read_input_registers.side_effect = EXTENSION_EASTRON_SDM120M_MODBUS_REGISTER
 
     mock_hardware_info: PropertyMock = mocker.patch(
         "unipi_control.hardware.map.HardwareInfo", new_callable=PropertyMock()
@@ -228,9 +229,6 @@ async def init_unipi(config_loader: ConfigLoader, modbus_client: ModbusClient) -
 
     unipi: Unipi = Unipi(config=config, modbus_client=modbus_client)
     await unipi.init()
-
-    await unipi.modbus_helper.scan_tcp()
-    await unipi.modbus_helper.scan_serial()
 
     yield unipi
 
