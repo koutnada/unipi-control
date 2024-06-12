@@ -21,6 +21,7 @@ def slugify(value: str) -> str:
     -------
     str
         Converted string.
+
     """
     value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     value = re.sub(r"[^\w\s-]", "", value.lower())

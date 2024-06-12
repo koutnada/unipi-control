@@ -62,6 +62,7 @@ class HassSensorsDiscovery(HassDiscoveryMixin):
         -------
         tuple:
             Return mqtt topic and message as tuple.
+
         """
         topic: str = (
             f"{self.config.homeassistant.discovery_prefix}/sensor"
@@ -132,6 +133,7 @@ class HassSensorsMqttPlugin:
         ----------
         tasks: set
             A set of all MQTT tasks.
+
         """
         task: Task = asyncio.create_task(self.hass.publish())
         tasks.add(task)

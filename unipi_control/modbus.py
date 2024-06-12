@@ -37,6 +37,7 @@ async def check_modbus_call(
     -------
     ModbusResponse: optional
         Return modbus response if no errors found else None.
+
     """
     response: Optional[ModbusResponse] = None
 
@@ -62,6 +63,7 @@ class ModbusCacheData:
         A modbus client.
     hardware: HardwareMap
         The Unipi Neuron hardware definitions.
+
     """
 
     def __init__(self, modbus_client: ModbusClient, hardware: HardwareMap) -> None:
@@ -119,6 +121,7 @@ class ModbusCacheData:
         -------
         list
             A list of cached modbus register blocks.
+
         """
         ret: List[int] = []
 

@@ -123,6 +123,7 @@ class ConfigLoaderMixin:
         ----------
         new: dict
             Overwrite settings as dictionary.
+
         """
         for key, value in new.items():
             if hasattr(self, key):
@@ -149,6 +150,7 @@ class ConfigLoaderMixin:
         ----------
         config_file: Path
             Path to the YAML file.
+
         """
         if config_file.is_file() and config_file.exists():
             try:
@@ -308,6 +310,7 @@ class ModbusSerialConfig(ConfigLoaderMixin):
         -------
         Generator:
             Filtered units.
+
         """
         return (modbus_unit for modbus_unit in self.units if modbus_unit.identifier == identifier)
 
@@ -403,6 +406,7 @@ class LoggingConfig(ConfigLoaderMixin):
             Logging verbose level as integer.
         fmt: str, optional
             Custom logging formatter
+
         """
         UNIPI_LOGGER.handlers.clear()
         UNIPI_LOGGER.setLevel(LOG_LEVEL[self.level])
@@ -429,6 +433,7 @@ class LoggingConfig(ConfigLoaderMixin):
         ----------
         verbose: int
             Logging verbose level as integer.
+
         """
         levels: List[int] = list(LOG_LEVEL.values())
         level: int = levels[min(max(verbose, self.verbose), len(levels) - 1)]
@@ -687,5 +692,6 @@ class HardwareMap(Mapping[str, HardwareDefinition]):
         -------
         Iterator:
             Filtered hardware definitions.
+
         """
         return (definition for definition in self.data.values() if definition.hardware_type in hardware_types)

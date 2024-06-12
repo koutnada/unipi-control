@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2024-06-12
+
 ### Added
 
 - Added support for MQTT broker authentication with username and password
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump pymodbus to version 3.5.4
+
+### Fixed
+
+- Fix `unipi-config-backup` binary: "Error, the program tried to call itself with '-c' argument. Disable with '--no-deployment-flag=self-execution'.)"
 
 ## [3.1.0] - 2023-10-03
 

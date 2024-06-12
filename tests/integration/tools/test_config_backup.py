@@ -1,4 +1,5 @@
 """Integration tests for unipi-config-backup cli command."""
+
 import re
 import tarfile
 from typing import List, TYPE_CHECKING

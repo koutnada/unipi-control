@@ -67,6 +67,7 @@ class Board:
             Input and output features.
         board_config: BoardConfig
             Neuron board configuration e.g. major_group and firmware.
+
         """
         self.config: Config = config
         self.modbus_client: ModbusClient = modbus_client
@@ -192,6 +193,7 @@ class Neuron:
     features: FeatureMap
         All registered features (e.g. Relay, Digital Input, ...) from the
         Unipi Neuron.
+
     """
 
     def __init__(self, config: Config, modbus_client: ModbusClient) -> None:
@@ -228,6 +230,7 @@ class Neuron:
         -------
         str:
             Unipi Neuron firmware version
+
         """
         versions = getattr(response, "registers", [0, 0])
         return f"{(versions[0] & 0xff00) >> 8}.{(versions[0] & 0x00ff)}"

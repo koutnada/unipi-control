@@ -55,11 +55,11 @@ audit = [
     "pip-audit==2.6.1",
 ]
 format = [
-    "black==23.11.0",
+    "black==24.4.2",
 ]
 lint = [
-    "mypy==1.7.0",
-    "ruff==0.1.6",
+    "mypy==1.8.0",
+    "ruff==0.4.8",
     "types-PyYAML==6.0.12.12",
     "yamllint==1.33.0",
 ]
@@ -93,6 +93,8 @@ junit_xml = "reports/mypy.xml"
 [tool.ruff]
 target-version = "py38"
 line-length = 120
+
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
     "ANN101",  # missing-type-self

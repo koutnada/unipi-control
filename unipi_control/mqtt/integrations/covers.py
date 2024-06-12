@@ -1,4 +1,5 @@
 """Initialize MQTT subscribe and publish for covers."""
+
 import asyncio
 import re
 from asyncio import Queue
@@ -72,6 +73,7 @@ class CoversMqttPlugin:
             The async exit stack for MQTT.
         tasks: set
             A set of all MQTT tasks.
+
         """
         await self._set_position_topic(stack, tasks)
         await self._tilt_command_topic(stack, tasks)

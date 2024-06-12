@@ -133,6 +133,7 @@ class UnipiControl:
             A unique MQTT client ID.
         callback: Callback
             A callback function that executed after successful MQTT connect.
+
         """
         UNIPI_LOGGER.info("%s Client ID: %s", LogPrefix.MQTT, mqtt_client_id)
 
@@ -201,6 +202,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     Returns
     -------
     Argparse namespace
+
     """
     parser: argparse.ArgumentParser = init_argparse(description="Control Unipi I/O with MQTT commands")
     parser.add_argument(

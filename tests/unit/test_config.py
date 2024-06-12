@@ -1,4 +1,5 @@
 """Unit test for configurations."""
+
 import logging
 import re
 from pathlib import Path

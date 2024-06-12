@@ -603,9 +603,9 @@ class TestHappyPathHassSwitchesMqttPlugin:
         """Test mqtt topic and message when publish a feature."""
         mock_mqtt_client: AsyncMock = AsyncMock(spec=Client)
         plugin: HassSwitchesMqttPlugin = HassSwitchesMqttPlugin(neuron=neuron, mqtt_client=mock_mqtt_client)
-        features: Iterator[
-            Union[DigitalInput, DigitalOutput, Led, Relay, EastronMeter]
-        ] = neuron.features.by_feature_types(HassSwitchesDiscoveryMixin.publish_feature_types)
+        features: Iterator[Union[DigitalInput, DigitalOutput, Led, Relay, EastronMeter]] = (
+            neuron.features.by_feature_types(HassSwitchesDiscoveryMixin.publish_feature_types)
+        )
 
         for index, feature in enumerate(features):
             if isinstance(feature, (DigitalOutput, Relay)):

@@ -117,6 +117,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     Returns
     -------
     Argparse namespace
+
     """
     parser: argparse.ArgumentParser = init_argparse(description="Convert Evok to Unipi Control YAML file format")
     parser.add_argument("input", help="path to the evok YAML file")
