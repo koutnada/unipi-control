@@ -16,6 +16,7 @@ fi
 pip install --no-cache-dir -e .
 
 sudo -H -u ${USER} python -m nuitka \
+  --no-deployment-flag=self-execution \
   --standalone \
   --onefile \
   --output-filename="$1" \
