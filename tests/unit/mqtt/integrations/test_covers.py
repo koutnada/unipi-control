@@ -1,4 +1,5 @@
 """Unit tests MQTT for Home Assistant covers."""
+
 import asyncio
 from asyncio import Task
 from contextlib import AsyncExitStack
@@ -33,6 +34,7 @@ async def init_tasks(covers: CoverMap, mqtt_messages: List[MockMQTTMessages], su
         A list of mocked MQTT topic messages.
     subscribe_running: List[bool]
         List of running subscribe loops for mocked side effects.
+
     """
     covers.init()
     mock_mqtt_messages: AsyncMock = AsyncMock()

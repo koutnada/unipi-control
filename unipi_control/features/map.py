@@ -47,6 +47,7 @@ class FeatureMap(Mapping[str, List[Union[DigitalInput, DigitalOutput, Led, Relay
         ----------
         feature: Feature
             Input or output feature.
+
         """
         feature_type: FeatureType = feature.hardware.feature_type
 
@@ -75,6 +76,7 @@ class FeatureMap(Mapping[str, List[Union[DigitalInput, DigitalOutput, Led, Relay
         ------
         ConfigError
             Get an exception if feature type not found.
+
         """
         data: Iterable[Union[DigitalInput, DigitalOutput, Led, Relay, EastronMeter]] = itertools.chain.from_iterable(
             self.values()
@@ -107,6 +109,7 @@ class FeatureMap(Mapping[str, List[Union[DigitalInput, DigitalOutput, Led, Relay
         -------
         Iterator
             A list of features filtered by feature type.
+
         """
         return itertools.chain.from_iterable(
             [item for item in (self.get(feature_type) for feature_type in feature_types) if item is not None]

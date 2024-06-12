@@ -1,4 +1,5 @@
 """Unit tests MQTT for covers."""
+
 import asyncio
 from typing import List
 from typing import NamedTuple

@@ -1,4 +1,5 @@
 """Helpers for MQTT subscribe and publish."""
+
 from typing import TYPE_CHECKING
 from typing import Union
 

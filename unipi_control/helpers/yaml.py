@@ -29,6 +29,7 @@ def yaml_dumper(content: str) -> str:
     -------
     str:
         YAML content as string
+
     """
     data: str = yaml.dump(
         yaml.safe_load(content),
@@ -55,6 +56,7 @@ def yaml_loader_safe(yaml_file: Path) -> Dict[str, Any]:
     ------
     YamlError
         Raise if the YAML file can't be read.
+
     """
     try:
         data: Dict[str, Any] = yaml.safe_load(yaml_file.read_text())

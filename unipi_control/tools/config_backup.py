@@ -62,6 +62,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     Returns
     -------
     Argparse namespace
+
     """
     parser: argparse.ArgumentParser = init_argparse(description="Backup Unipi Control configuration")
     parser.add_argument("output", help="path to save the backup file")

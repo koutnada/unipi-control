@@ -1,4 +1,5 @@
 """Integration tests for unipi-config-backup cli command."""
+
 from typing import Dict
 from typing import List
 from unittest.mock import AsyncMock

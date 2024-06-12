@@ -43,6 +43,7 @@ class HassCoversDiscovery:
         -------
         tuple:
             Return MQTT topic and message as tuple.
+
         """
         topic: str = (
             f"{self.config.homeassistant.discovery_prefix}/cover"
@@ -102,6 +103,7 @@ class HassCoversMqttPlugin:
         ----------
         tasks: set
             A set of all MQTT tasks.
+
         """
         task: Task = asyncio.create_task(self.hass.publish())
         tasks.add(task)

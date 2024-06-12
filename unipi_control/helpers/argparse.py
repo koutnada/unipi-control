@@ -16,6 +16,7 @@ def init_argparse(description: str) -> argparse.ArgumentParser:
     Returns
     -------
     ArgumentParser
+
     """
     parser: argparse.ArgumentParser = argparse.ArgumentParser(description=description)
 

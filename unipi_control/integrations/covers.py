@@ -118,6 +118,7 @@ class CoverTimer:
             The timer timeout in seconds.
         callback: Callable
             The callback function that is executed at the end of the timer.
+
         """
         self._timeout: float = timeout
         self._callback: Callable[[], Awaitable[None]] = callback
@@ -180,6 +181,7 @@ class Cover:
             Dataclass with configuration settings from yaml file.
         settings: CoverSettings
             Cover settings from the yaml configuration.
+
         """
         self.config: Config = config
         self.settings: CoverSettings = settings
@@ -202,6 +204,7 @@ class Cover:
         -------
         str:
             Unique ID for Home Assistant discovery.
+
         """
         return f"{slugify(self.config.device_info.name)}_{self.settings.object_id}"
 
@@ -213,6 +216,7 @@ class Cover:
         -------
         str:
             Path for MQTT topic.
+
         """
         return f"{slugify(self.config.device_info.name)}/{self.settings.object_id}/cover/{self.settings.device_class}"
 
@@ -224,6 +228,7 @@ class Cover:
         -------
         Path:
             Path to temporary cover file.
+
         """
         return self.config.unipi_tmp_dir / self.topic.replace("/", "__")
 
@@ -235,6 +240,7 @@ class Cover:
         -------
         bool:
             ``True`` if cover is opening else ``False``.
+
         """
         return self.state == CoverState.OPENING
 
@@ -246,6 +252,7 @@ class Cover:
         -------
         bool:
             ``True`` if cover is closing else ``False``.
+
         """
         return self.state == CoverState.CLOSING
 
@@ -267,6 +274,7 @@ class Cover:
             covers.Cover.close(): close the cover.
             covers.Cover.stop(): stop the cover.
             covers.Cover.set_position(): set the cover position.
+
         """
         if changed := self.state != self.current.state:
             self.current.state = self.state
@@ -296,6 +304,7 @@ class Cover:
             covers.Cover.open(): open the cover.
             covers.Cover.close(): close the cover.
             covers.Cover.set_position(): set the cover position.
+
         """
         if self.settings.cover_run_time:
             changed: bool = self.status.position != self.current.position
@@ -322,6 +331,7 @@ class Cover:
         See Also
         --------
             covers.Cover.set_tilt(): set the cover tilt position.
+
         """
         if self.properties.set_tilt is True:
             changed: bool = self.status.tilt != self.current.tilt
@@ -402,6 +412,7 @@ class Cover:
         -------
         float, optional
             Cover run time for fully opened cover.
+
         """
         if self.calibration.mode is True and not self.calibration.started:
             self.calibration.started = True
@@ -431,6 +442,7 @@ class Cover:
         -------
         float, optional
             Cover run time in seconds.
+
         """
         if (
             self.settings.cover_run_time
@@ -493,6 +505,7 @@ class Cover:
         -------
         float, optional
             Cover run time in seconds.
+
         """
         if self.settings.cover_run_time and (
             self.status.position is None
@@ -622,6 +635,7 @@ class Cover:
         -------
         float, optional
             Cover run time in seconds.
+
         """
         if not self.settings.cover_run_time:
             return None
@@ -648,6 +662,7 @@ class Cover:
         -------
         float, optional
             Cover run time in seconds.
+
         """
         cover_run_time: Optional[float] = None
 
@@ -731,6 +746,7 @@ class CoverMap(Mapping[str, List[Cover]]):
         -------
         Iterator:
             Filtered covers list.
+
         """
         return itertools.chain.from_iterable(
             [item for item in (self.get(device_class) for device_class in device_classes) if item is not None]

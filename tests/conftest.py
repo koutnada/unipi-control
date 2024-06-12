@@ -1,4 +1,5 @@
 """Test configuration for pytest."""
+
 import asyncio
 import logging
 from asyncio import AbstractEventLoop
@@ -78,6 +79,7 @@ class ConfigLoader:
         ----------
         content: str
             Content for the config yaml file
+
         """
         with self.config_file.open("w", encoding="utf-8") as _file:
             _file.write(content)
@@ -89,6 +91,7 @@ class ConfigLoader:
         ----------
         content: str
             Content for the hardware yaml file
+
         """
         with self.hardware_data_file.open("w", encoding="utf-8") as _file:
             _file.write(content)
@@ -100,6 +103,7 @@ class ConfigLoader:
         ----------
         content: str
             Content for extension the hardware yaml file
+
         """
         with self.extension_hardware_data_file.open("w", encoding="utf-8") as _file:
             _file.write(content)
@@ -132,6 +136,7 @@ def create_config(request: SubRequest, tmp_path: Path) -> ConfigLoader:
     -------
     ConfigLoader:
         Helper methods from the config loader class.
+
     """
     config_loader: ConfigLoader = ConfigLoader(temp=tmp_path)
     config_loader.write_config(request.param[0])
@@ -171,6 +176,7 @@ def mock_modbus_client(request: SubRequest, mocker: MockerFixture) -> MockModbus
     -------
     MockModbusClient: NamedTuple
         Named tuple with mocked tcp and serial client
+
     """
     modbus_client_config: Dict[str, Any] = getattr(request, "param", {})
 
@@ -223,6 +229,7 @@ async def init_neuron(config_loader: ConfigLoader, modbus_client: ModbusClient) 
         Config loader class with helper methods.
     modbus_client: ModbusClient
         Mocked modbus client.
+
     """
     config: Config = config_loader.get_config()
     config.logging.init()
@@ -243,6 +250,7 @@ async def create_cover_map(config_loader: ConfigLoader, neuron: Neuron) -> Async
         Config loader class with helper methods.
     neuron: Neuron
         Initialized neuron device.
+
     """
     config: Config = config_loader.get_config()
     config.logging.init()

@@ -1,4 +1,5 @@
 """Integration tests for unipi-config-converter cli command."""
+
 from pathlib import Path
 from typing import List
 

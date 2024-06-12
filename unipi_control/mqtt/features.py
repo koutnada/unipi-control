@@ -75,6 +75,7 @@ class NeuronFeaturesMqttPlugin(BaseFeaturesMqttPlugin):
             The async exit stack for mqtt.
         tasks: set
             A set of all MQTT tasks.
+
         """
         for feature in self.neuron.features.by_feature_types(self.subscribe_feature_types):
             if isinstance(feature, (DigitalOutput, Relay)):
@@ -132,6 +133,7 @@ class MeterFeaturesMqttPlugin(BaseFeaturesMqttPlugin):
         ----------
         tasks: set
             A set of all MQTT tasks.
+
         """
         task: Task = asyncio.create_task(
             self._publish(

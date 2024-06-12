@@ -163,6 +163,7 @@ class Relay(NeuronFeature):
         Returns
         -------
         ModbusResponse
+
         """
         data: ModbusWriteData = {
             "address": self.val_coil,
@@ -187,6 +188,7 @@ class DigitalOutput(NeuronFeature):
         Returns
         -------
         ModbusResponse
+
         """
         data: ModbusWriteData = {
             "address": self.val_coil,
@@ -215,6 +217,7 @@ class Led(NeuronFeature):
         Returns
         -------
         ModbusResponse
+
         """
         data: ModbusWriteData = {
             "address": self.val_coil,
